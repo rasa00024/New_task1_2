@@ -1,20 +1,30 @@
-# Use the official Node.js image as a base image
+# Use an official Node.js runtime as the base image
 FROM node:14
 
-# Set the working directory in the container
-WORKDIR /usr/src/app
+# Create a non-root user
+RUN adduser --disabled-password --gecos '' myuser
 
-# Copy the package.json and package-lock.json files to the working directory
+# Set the working directory inside the container
+WORKDIR /app
+
+# Copy package.json and package-lock.json to the working directory
 COPY package*.json ./
 
-# Install the application's dependencies
+# Install the project dependencies
 RUN npm install
 
 # Copy the rest of the application code to the working directory
 COPY . .
 
-# Expose port 8070 for the backend app
+# Expose the port your Node.js app will run on
 EXPOSE 8070
 
-# Specify the command to run when the container starts
-CMD ["npm", "start"]
+# Define environment variables
+ENV PORT=8070
+ENV MONGODB_URL=mongodb+srv://berthutapea:zkZ0tg0H7yiScvO5@cluster0.jwcfbn8.mongodb.net/db_student?retryWrites=true&w=majority
+
+# Switch to the non-root user
+USER myuser
+
+# Command to run your Node.js application
+CMD ["node", "server.js"]
